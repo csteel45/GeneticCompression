@@ -18,6 +18,7 @@
  */
 package com.precognizant.genetics.operand;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 
 import com.precognizant.genetics.node.Node;
@@ -28,7 +29,6 @@ import com.precognizant.genetics.node.Node;
  * @since Jan 29, 2011 7:53:25 AM
  */
 public interface Operand extends Node {
-	public <T extends Node> Number evaluate(ArrayList<T> params);
-	public <T extends Node> Number evaluate(Number num1, Number num2);
+	public BigInteger evaluate(ArrayList<BigInteger> params);
 	
 }

@@ -43,7 +43,6 @@ public class NodeTreeImpl implements NodeTree {
 		operandList.add(new MathOperand(Operation.PLUS));
 		operandList.add(new MathOperand(Operation.MINUS));
 		operandList.add(new MathOperand(Operation.TIMES));
-		operandList.add(new MathOperand(Operation.DIVIDE));
 		operandList.add(new MathOperand(Operation.POWER));
 		operandList.add(new MathOperand(Operation.POWPOW));
 		//operandList.add(new IfOperand());
