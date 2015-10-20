@@ -27,7 +27,7 @@ import com.precognizant.genetics.operand.Operand;
  *
  * @since Jan 29, 2011 2:44:49 AM
  */
-public abstract class FunctionNode implements Node {
+public abstract class FunctionNode {
 	protected Operand operand;
 	protected ArrayList<Node> paramList;
 	

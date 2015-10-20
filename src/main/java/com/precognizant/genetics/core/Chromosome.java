@@ -37,33 +37,29 @@ public class Chromosome implements Comparable<Object> {
 	private ArrayList<Gene> genes;
 	private BigInteger fitness = BigInteger.ZERO;
 	private UUID uuid;
-	private int inputSize;
+	private BigInteger goal = null;
 
 	private Chromosome() {
 		uuid = UUID.randomUUID();
 	}
-
-	public Chromosome(int inputSize) {
-		this();
-		this.inputSize = inputSize;
-	}
 	
-	public Chromosome(int numGenes, int inputSize) {
+	public Chromosome(int numGenes, BigInteger goal) {
 		this();
-		this.inputSize = inputSize;
+		this.goal = goal;
 		genes = new ArrayList<Gene>(numGenes);
 		for (int i = 0; i < numGenes; i++) {
-			genes.add(createGene(inputSize));
+			genes.add(createGene());
 		}
+		this.calculateFitness();
 	}
-	
-	public Gene createGene(int inputSize) {
-		return new Gene(inputSize);
+
+	private Gene createGene() {
+		return null;
 	}
 
 	public void mutate() {
-		Gene gene = createGene(inputSize);
-		genes.set(Rand.nextInt(genes.size()), gene);
+		Gene mutation = createGene();
+		genes.set(Rand.nextInt(genes.size()), mutation);
 	}
 
 	public int getNumGenes() {
@@ -78,38 +74,22 @@ public class Chromosome implements Comparable<Object> {
 		return genes;
 	}
 
-	/**
-	 * @return
-	 */
 	public BigInteger getFitness() {
-		//if(fitness.doubleValue() < 1.0)
-			//System.out.println("THIS FITNESS IS: " + fitness);
 		return fitness;
 	}
 	
-	public BigInteger calculateFitness(ArrayList<BigDecimal> inputs) {
-		ArrayList<Node> nodeInputs = new ArrayList<Node>();
-		for (BigDecimal input : inputs) {
-			nodeInputs.add(new ConstNode(input));
-		}
-		BigDecimal result = BigDecimal.ZERO;
-		//System.out.println("--------------------------------");
+	public BigInteger calculateFitness() {
+		BigInteger result = BigInteger.ZERO;
 		for(Gene gene : genes) {
-			BigDecimal eval = (BigDecimal) gene.node.evaluate(nodeInputs);
-			//System.out.println("Gene: " + gene + " Eval: " + eval + " Node inputs: " + inputs);
-			result = result.add(eval);
+			result = result.add(gene.evaluate());
 			//System.out.println("Gene " + gene + " Result for " + x + " " + y + " = " + result);
 		}
-		fitness = result.toBigInteger();
+		fitness = goal.subtract(result).abs();
 		return fitness;
 	}
 
-	public void setFitness(BigInteger fitness) {
-		this.fitness = fitness;
-	}
-
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Used for sorting.
 	 * 
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
@@ -137,8 +117,7 @@ public class Chromosome implements Comparable<Object> {
 	public static void main(String[] args) {
 		ArrayList<Chromosome> list = new ArrayList<Chromosome>();
 		for (int i = 0; i < 48; i++) {
-			Chromosome c = new Chromosome(4, 0);
-			c.setFitness(BigInteger.valueOf(5000 + i));
+			Chromosome c = new Chromosome(4, BigInteger.valueOf(13l * i));
 			list.add(c);
 		}
 		// System.out.println("Unsorted list: " + list);

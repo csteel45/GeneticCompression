@@ -18,7 +18,7 @@
  */
 package com.precognizant.genetics.node;
 
-import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 /**
@@ -51,7 +51,7 @@ public class ConstNode extends ParamNode {
 	 */
 	@Override
 	public <T extends Node> Number evaluate(ArrayList<T> args) {
-		// Return the constant
+		// TODO Auto-generated method stub
 		return constant;
 	}
 
@@ -64,8 +64,8 @@ public class ConstNode extends ParamNode {
 			return ((Float) constant).toString();
 		if (constant instanceof Double)
 			return ((Double) constant).toString();
-		if (constant instanceof BigInteger)
-			return ((BigInteger) constant).toString();
+		if (constant instanceof BigDecimal)
+			return ((BigDecimal) constant).toString();
 
 		return new String("Unknown number type: " + constant);
 	}

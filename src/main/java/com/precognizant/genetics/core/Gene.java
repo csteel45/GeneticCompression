@@ -18,6 +18,8 @@
  */
 package com.precognizant.genetics.core;
 
+import java.math.BigInteger;
+
 import com.precognizant.genetics.node.Node;
 import com.precognizant.genetics.node.NodeTreeImpl;
 
@@ -30,10 +32,6 @@ public class Gene {
 	protected Node node;
 	private static NodeTreeImpl nodeTreeImpl = new NodeTreeImpl();
 	
-	public Gene(int inputSize) {
-		node = nodeTreeImpl.getNode(inputSize);
-	}
-	
 	public Gene(Node node) {
 		this.node = node;
 	}
@@ -44,5 +42,25 @@ public class Gene {
 	
 	public String toString() {
 		return node.toString();
+	}
+
+	public BigInteger evaluate() {
+		return node.evaluate();
+	}
+	
+	/**
+	 * Used for sorting.
+	 * 
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	@Override
+	public int compareTo(Object o) {
+		if (o instanceof Gene) {
+			Gene gene = (Gene) o;
+			return (this.getFitness().compareTo(c.fitness));
+		}
+		System.out.println("Chromosome.compareTo failed instanceof test. Exitting.");
+		System.exit(-1);
+		return 0;
 	}
 }

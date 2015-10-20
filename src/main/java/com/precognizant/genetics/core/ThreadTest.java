@@ -1,7 +1,7 @@
 /*
- * @(#)Node.java $Date: Feb 15, 2011 6:28:27 PM $
+ * @(#)ThreadTest.java $Date: Oct 19, 2015 8:51:13 PM $
  * 
- * Copyright 2011 FortMoon Consulting, Inc. All Rights Reserved.
+ * Copyright © 2015 FortMoon Consulting, Inc. All Rights Reserved.
  * 
  * This software is the confidential and proprietary information of FortMoon
  * Consulting, Inc. ("Confidential Information"). You shall not disclose such
@@ -16,22 +16,32 @@
  * DERIVATIVES.
  * 
  */
-package com.precognizant.genetics.node;
+package com.precognizant.genetics.core;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
+import java.math.BigDecimal;
 
 /**
  * @author Christopher Steel - FortMoon Consulting, Inc.
  *
- * @since Jan 29, 2011 2:19:14 AM
+ * @since Oct 19, 2015 8:51:13 PM
  */
-public interface Node {
-	public <T extends Node> Number evaluate(ArrayList<T> args);
+public class ThreadTest {
 
 	/**
 	 * @param args
-	 * @return
 	 */
-	BigInteger evaluate(ArrayList<BigInteger> args);
+	public static void main(String[] args) {
+		for(int i = 0; i < 3; i++) {
+			Thread t = new Thread(new Runnable() {
+				public void run() {
+					for(int j = 0; j < 1000000; j++) {
+						BigDecimal result = BigDecimal.valueOf(j).pow(j);
+					}
+				}
+			});
+			t.start();
+		}
+
+	}
+
 }
