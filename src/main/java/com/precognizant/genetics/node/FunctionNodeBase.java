@@ -43,12 +43,7 @@ public class FunctionNodeBase extends FunctionNode {
 	 */
 	@Override
 	public <T extends Node> Number evaluate(ArrayList<T> args) {
-		//System.out.println("FNB evaluate args = " + args);
-		/*		System.out.println("FNB evaluate paramList.get(0) = " + paramList.get(0));
-		System.out.println("FNB evaluate paramList.get(1) = " + paramList.get(1));
-		System.out.println("FNB evaluate paramList.get(0).evaluate = " + paramList.get(0).evaluate(args));
-		System.out.println("FNB evaluate paramList.get(1).evaluate = " + paramList.get(1).evaluate(args));
-*/
+
 		Number evaluation = operand.evaluate(paramList.get(0).evaluate(args), paramList.get(1).evaluate(args));
 		return evaluation;
 //		return operand.evaluate(args);

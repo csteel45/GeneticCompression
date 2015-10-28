@@ -29,23 +29,13 @@ import com.precognizant.genetics.node.NodeTreeImpl;
  * @since Feb 15, 2011 6:28:27 PM
  */
 public class Gene {
-	protected Node node;
-	private static NodeTreeImpl nodeTreeImpl = new NodeTreeImpl();
+	private 
 	
-	public Gene(Node node) {
-		this.node = node;
-	}
-	
-	public Node getNode() {
-		return node;
+	public Gene() {
 	}
 	
 	public String toString() {
-		return node.toString();
-	}
-
-	public BigInteger evaluate() {
-		return node.evaluate();
+		return this.toString();
 	}
 	
 	/**

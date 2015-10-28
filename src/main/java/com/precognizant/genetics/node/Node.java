@@ -27,11 +27,11 @@ import java.util.ArrayList;
  * @since Jan 29, 2011 2:19:14 AM
  */
 public interface Node {
-	public <T extends Node> Number evaluate(ArrayList<T> args);
+//	public <T extends Node> Number evaluate(ArrayList<T> args);
 
 	/**
 	 * @param args
 	 * @return
 	 */
-	BigInteger evaluate(ArrayList<BigInteger> args);
+	public BigInteger evaluate(ArrayList<BigInteger> args);
 }

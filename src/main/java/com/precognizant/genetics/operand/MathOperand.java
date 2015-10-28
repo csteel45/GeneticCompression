@@ -61,9 +61,9 @@ public class MathOperand implements Operand {
 			BigInteger eval(BigInteger x, BigInteger y) {
 				return x.pow(y.intValue());
 			}
-		},
+		};
 		
-		POWPOW {;
+/*		POWPOW {;
 			@SuppressWarnings("unchecked")
 			BigInteger eval(BigInteger x, BigInteger y) {
 				BigInteger count = BigInteger.ZERO;
@@ -72,12 +72,14 @@ public class MathOperand implements Operand {
 				BigInteger result = BigInteger.ZERO;
 				while(count.compareTo(bY) == -1) {
 					count = count.add(BigInteger.ONE);
+					// FIXME: This doesn't work due to runcation to int.!!!
 					result = result.add(new BigInteger(x.toString()).pow(y.intValue()));
 					//System.out.println("Count = " + count + " bY = " + bY);
 				}
 				return x.pow(y.intValue());
 			}
 		};
+		*/
 		// Do arithmetic op represented by this constant
 		abstract BigInteger eval(BigInteger number, BigInteger number2);
 	}
@@ -90,11 +92,14 @@ public class MathOperand implements Operand {
 		this.operation = op;
 	}
 
-	@Override
-	public BigInteger evaluate(ArrayList<Operation> args) {
-		return this.operation.eval(args.get(0).evaluate(args), args.get(1).evaluate(args));
+	public BigInteger evaluate(ArrayList<BigInteger> args) {
+		return this.operation.eval(args.get(0), args.get(1));
 	}
-	
+
+	public BigInteger evaluate(BigInteger arg0, BigInteger arg1) {
+		return this.operation.eval(arg0, arg1);
+	}
+
 	public Operation getOperation() {
 		return operation;
 	}
@@ -104,27 +109,22 @@ public class MathOperand implements Operand {
 	}
 
 	public static void main(String[] args) {
-		ArrayList<Node> params = new ArrayList<Node>();
-		params.add(new ConstNode(2));
-		params.add(new ConstNode(3));
+		ArrayList<BigInteger> params = new ArrayList<BigInteger>();
+		BigInteger param1 = new BigInteger("12837469341234");
+		BigInteger param2 = new BigInteger("12345");
+		params.add(param1);
+		params.add(param2);
 
 		for (Operation op : Operation.values()) {
 			//MathOperand math = new MathOperand(op);
-			System.out.println("Integer Eval of 2 " + op.toString() + " 3 = " + op.eval(BigInteger.valueOf(2), BigInteger.valueOf(3)));
+			System.out.println("Integer Eval of 1283746941234 " + op.toString() + " 1434 = " + op.eval(param1, param2));
 		}
-
-		for (Operation op : Operation.values()) {
-			MathOperand math = new MathOperand(op);
-			System.out.println("Eval of 2 " + op.toString() + " 3 = " + math.evaluate(params));
-		}
+		BigInteger res = Operation.POWER.eval(param1, param2);
+		System.out.println("Byte count of POW: " + res.bitCount() / 8);
+		System.out.println("Result ADD: " + Operation.PLUS.eval(res, res));
 		
-		System.out.println("Powpow 5, 20 = " + new MathOperand(Operation.POWPOW).evaluate(5, 20));
+//		System.out.println("Powpow 5, 20 = " + new MathOperand(Operation.POWPOW).evaluate(BigInteger.valueOf(5), BigInteger.valueOf(20)));
 
-	}
-
-	@Override
-	public <T extends Node> Number evaluate(Number num1, Number num2) {
-		return this.operation.eval(num1, num2);
 	}
 
 }
