@@ -41,12 +41,8 @@ public class Compress {
 	}
 	
 	public BigInteger convertToNumber(byte[] buf) {
-		byte[] test = new byte[] {0, 0, 0, 0, 0, 0, 0, 4};
 		BigInteger num = null;
 		num = new BigInteger(buf);
-		BigInteger pow = BigInteger.valueOf(buf.length / 2);
-		BigInteger result = BigInteger.valueOf(buf.length / 2);
-		System.out.println("Result Pow = " + pow + " result = " + result);
 
 		return num;
 	}
@@ -98,6 +94,18 @@ public class Compress {
 		}
 		
 		ArrayList<byte[]> list = comp.parseFile(file);
+		System.out.println("Divided file into a number of 5000 byte segments = " + list.size());
+		// HERE WE DO THE WORK
+		// Let's play with just the first
+		System.out.println("Grabbing first segment of size = " + list.get(0).length);
+		byte[] first = list.get(0);
+		BigInteger firstNum = comp.convertToNumber(first);
+		System.out.println("First number byte count = " + firstNum.bitLength()/8);
+		BigInteger squared = firstNum.multiply(firstNum);
+		System.out.println("First number squared byte count = " + squared.bitLength()/8);
+		BigInteger powered = firstNum.pow(100);
+		System.out.println("First number power of int max  = " + powered.bitLength()/8);
+		
 		ByteBuffer bb = ByteBuffer.allocate(comp.fileLength);
 		for(int i = 0; i < list.size(); i++) {
 			bb.put(list.get(i));

@@ -18,14 +18,11 @@
  */
 package com.precognizant.genetics.core;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.UUID;
 
-import com.precognizant.genetics.node.ConstNode;
-import com.precognizant.genetics.node.Node;
 import com.precognizant.genetics.util.Rand;
 
 /**
@@ -50,14 +47,16 @@ public class Chromosome implements Comparable<Object> {
 		for (int i = 0; i < numGenes; i++) {
 			genes.add(createGene());
 		}
-		this.calculateFitness();
+		this.getFitness();
 	}
 
 	private Gene createGene() {
+		//FIXME: Complete.
 		return null;
 	}
 
 	public void mutate() {
+		//FIXME: Change to mutate at same scale???
 		Gene mutation = createGene();
 		genes.set(Rand.nextInt(genes.size()), mutation);
 	}
@@ -75,10 +74,6 @@ public class Chromosome implements Comparable<Object> {
 	}
 
 	public BigInteger getFitness() {
-		return fitness;
-	}
-	
-	public BigInteger calculateFitness() {
 		BigInteger result = BigInteger.ZERO;
 		for(Gene gene : genes) {
 			result = result.add(gene.evaluate());
