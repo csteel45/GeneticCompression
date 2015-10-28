@@ -30,7 +30,7 @@ import com.precognizant.genetics.util.Rand;
  *
  * @since Feb 15, 2011 6:28:27 PM
  */
-public class Chromosome implements Comparable<Object> {
+public class Chromosome implements Runnable, Comparable<Object> {
 	private ArrayList<Gene> genes;
 	private BigInteger fitness = BigInteger.ZERO;
 	private UUID uuid;
@@ -81,6 +81,14 @@ public class Chromosome implements Comparable<Object> {
 		}
 		fitness = goal.subtract(result).abs();
 		return fitness;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Runnable#run()
+	 */
+	@Override
+	public void run() {
+		eval();
 	}
 
 	/**
