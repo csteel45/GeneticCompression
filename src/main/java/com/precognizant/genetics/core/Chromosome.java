@@ -32,7 +32,8 @@ import com.precognizant.genetics.util.Rand;
  */
 public class Chromosome implements Runnable, Comparable<Object> {
 	private ArrayList<Gene> genes;
-	private BigInteger fitness = BigInteger.ZERO;
+	private Fitness fitness;
+//	private BigInteger fitness = BigInteger.ZERO;
 	private UUID uuid;
 	private BigInteger goal = null;
 
@@ -40,19 +41,20 @@ public class Chromosome implements Runnable, Comparable<Object> {
 		uuid = UUID.randomUUID();
 	}
 	
-	public Chromosome(int numGenes, BigInteger goal) {
+	public Chromosome(BigInteger goal) {
 		this();
 		this.goal = goal;
-		genes = new ArrayList<Gene>(numGenes);
-		for (int i = 0; i < numGenes; i++) {
+		genes = new ArrayList<Gene>();
+		// Add genes to the chromosome until result is as big as goal
+		while (goal.compareTo(this.fitness) == 1) {
+			// Let's create a gene with the right order of magnitude
 			genes.add(createGene());
 		}
 		this.getFitness();
 	}
 
 	private Gene createGene() {
-		//FIXME: Complete.
-		return null;
+		return new Gene();
 	}
 
 	public void mutate() {
@@ -65,10 +67,6 @@ public class Chromosome implements Runnable, Comparable<Object> {
 		return genes.size();
 	}
 
-	public void setGenes(ArrayList<Gene> genes) {
-		this.genes = genes;
-	}
-
 	public ArrayList<Gene> getGenes() {
 		return genes;
 	}
@@ -76,7 +74,7 @@ public class Chromosome implements Runnable, Comparable<Object> {
 	public BigInteger getFitness() {
 		BigInteger result = BigInteger.ZERO;
 		for(Gene gene : genes) {
-			result = result.add(gene.evaluate());
+			result = result.add(gene.getResult());
 			//System.out.println("Gene " + gene + " Result for " + x + " " + y + " = " + result);
 		}
 		fitness = goal.subtract(result).abs();
@@ -88,7 +86,7 @@ public class Chromosome implements Runnable, Comparable<Object> {
 	 */
 	@Override
 	public void run() {
-		eval();
+//		eval();
 	}
 
 	/**
@@ -120,7 +118,7 @@ public class Chromosome implements Runnable, Comparable<Object> {
 	public static void main(String[] args) {
 		ArrayList<Chromosome> list = new ArrayList<Chromosome>();
 		for (int i = 0; i < 48; i++) {
-			Chromosome c = new Chromosome(4, BigInteger.valueOf(13l * i));
+			Chromosome c = new Chromosome(BigInteger.valueOf(13l * i));
 			list.add(c);
 		}
 		// System.out.println("Unsorted list: " + list);

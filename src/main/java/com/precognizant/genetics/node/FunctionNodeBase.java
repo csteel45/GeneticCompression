@@ -35,7 +35,6 @@ public class FunctionNodeBase extends FunctionNode {
 	 */
 	public <T extends Node> FunctionNodeBase(Operand operand, ArrayList<T> paramList) {
 		super(operand, paramList);
-		// TODO Auto-generated constructor stub
 	}
 
 	/* (non-Javadoc)
