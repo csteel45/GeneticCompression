@@ -83,7 +83,7 @@ public class FunctionEnvironment extends Thread implements Environment {
 		long generation = 0;
 		population.sort();
 		while(population.calculateFitness().compareTo(BigInteger.ZERO) != 0) {
-			population.evolve();
+			population.run();
 		}
 
 		if(population.calculateFitness().compareTo(ZERO) != 0) {

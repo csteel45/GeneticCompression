@@ -22,14 +22,9 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-import com.precognizant.genetics.data.TestData;
-import com.precognizant.genetics.node.ConstNode;
-import com.precognizant.genetics.node.FunctionNodeBase;
-import com.precognizant.genetics.node.Node;
-import com.precognizant.genetics.node.ParamNode;
-import com.precognizant.genetics.operand.MathOperand;
-import com.precognizant.genetics.operand.Operand;
 import com.precognizant.genetics.util.Rand;
 
 /**
@@ -38,27 +33,25 @@ import com.precognizant.genetics.util.Rand;
  * @since Feb 15, 2011 6:28:27 PM
  */
 public class Population implements Serializable {
-	// protected TestData testData;
-	protected ArrayList<TestData> testSet;
 	protected Double mutationRate = 0.4;
 	private static final long serialVersionUID = 1L;
 	private static final BigInteger ZERO = BigInteger.valueOf(0);
 	private ArrayList<Chromosome> chromosomes;
-	private int inputSize;
 	private int sizeMutationRate = 10 * 48; // Need to factor in number of chromosomes
 	public long mutations = 0;
 	private boolean elitism = true;
 	private BigInteger populationFitness = BigInteger.valueOf(Long.MAX_VALUE);
 	private long generation = 0;
+	protected ExecutorService pool;
+	private int populationSize;
+	private BigInteger goal;
 
-	private Population() {
-		chromosomes = new ArrayList<Chromosome>();
-	}
-
-	public Population(int numChromosomes, int numVariables) {
-		this();
-		this.inputSize = numVariables;
-		this.setNumChromosomes(numChromosomes);
+	public Population(BigInteger goal, int populationSize) {
+		this.goal = goal;
+		this.populationSize = populationSize;
+		chromosomes = new ArrayList<Chromosome>(this.populationSize);
+		pool = Executors.newFixedThreadPool(populationSize);
+		this.setNumChromosomes(populationSize);
 	}
 
 	/**
@@ -71,9 +64,9 @@ public class Population implements Serializable {
 		
 		BigInteger fitness = ZERO;
 		for (Chromosome c : chromosomes) {
-			fitness = c.calculateFitness(this.getTestData(this.testSet));
+			fitness = c.getFitness();
 			if(fitness.compareTo(populationFitness) < 0) {
-				System.out.println("Setting population fitness " + populationFitness + " to: " + fitness);
+				System.out.println("Setting population fitness from: " + populationFitness + " to: " + fitness);
 				populationFitness = fitness;
 			}
 		}
@@ -83,7 +76,7 @@ public class Population implements Serializable {
 		return populationFitness;
 	}
 	
-	public void evolve() {
+	public void run() {
 		doCrossovers();
 		calculateFitness();
 		doMutations();
@@ -115,7 +108,7 @@ public class Population implements Serializable {
 			else
 				target.getGenes().add(gene);
 			
-			if(isElitism())
+			if(this.elitism)
 				source = chromosomes.get(i + 1); // pass crossover genes down
 			else
 				source = chromosomes.get(Rand.nextInt(chromosomes.size()-1)+1); // randomly crossover except to fittest
@@ -135,7 +128,7 @@ public class Population implements Serializable {
 			if (Rand.nextInt(sizeMutationRate) == 1) {
 				mutations++;
 				//System.out.println("Adding a gene. Length = " + (c.getGenes().size() + 1));
-				Gene newGene = new Gene(this.testSet.get(0).getInputs().size());
+				Gene newGene = new Gene();
 				c.getGenes().add(newGene);
 				// System.out.println("adding new Gene: " + newGene);
 			}
@@ -172,8 +165,7 @@ public class Population implements Serializable {
 			int diff = numChromosomes - chromosomes.size();
 			for (int i = 0; i < diff; i++) {
 				// Start with 1 gene per Chromosome and grow
-				Chromosome c = new Chromosome(1, inputSize);
-				c.setFitness(BigInteger.valueOf(Integer.MAX_VALUE));
+				Chromosome c = new Chromosome(this.goal);
 				chromosomes.add(c);
 			}
 		} 
@@ -186,14 +178,6 @@ public class Population implements Serializable {
 		System.out.println("Population size now = " + chromosomes.size());
 	}
 
-	public ArrayList<TestData> getTestData() {
-		return testSet;
-	}
-
-	public void setTestData(ArrayList<TestData> testSet) {
-		System.out.println("Setting test data.");
-		this.testSet = testSet;
-	}
 
 	public Double getMutationRate() {
 		return mutationRate;
@@ -204,108 +188,16 @@ public class Population implements Serializable {
 	}
 	
 	/**
-	 * @return the useElitism
-	 */
-	public boolean isElitism() {
-		return elitism;
-	}
-
-	/**
 	 * @param useElitism the useElitism to set
 	 */
 	public void setElitism(boolean elitism) {
 		this.elitism = elitism;
 	}
 
-	private void addChromosome(Chromosome c) {
-		this.chromosomes.add(c);
-	}
-
 	public static void main(String[] args) {
-		int generation = 0;
-		int testSize = 1;
-		int numVariables = 2;
-
-		Population population = new Population(48, numVariables);
-		ArrayList<TestData> testData = new ArrayList<TestData>(testSize);
-
-		for (int i = 0; i < testSize; i++) {
-			ArrayList<BigInteger> set = new ArrayList<BigInteger>(numVariables);
-
-			BigInteger x = BigInteger.valueOf(Rand.nextInt(49) + 1);
-			BigInteger y = BigInteger.valueOf(Rand.nextInt(49) + 1);
-			BigInteger z = BigInteger.valueOf(Rand.nextInt(49) + 1);
-
-			// double result = ((x/y) + 2.0 + (x * 9) + (z * 3));
-			double xd = x.doubleValue();
-			double yd = y.doubleValue();
-			double zd = z.doubleValue();
-			System.out.println("x = " + xd);
-			System.out.println("y = " + yd);
-			System.out.println("x * 9 = " + (xd * 9.0));
-			long result = (long) ((2 * zd) + (xd * 9) + (yd / xd));
-			// BigInteger result = y.divide(BigInteger.valueOf(1), 1,
-			// DOWN).add(BigInteger.valueOf(2)).add(x.multiply(BigInteger.valueOf(9))).add(z.multiply(BigInteger.valueOf(3)));
-			System.out.println("Result: " + result);
-			set.add(x);
-			set.add(y);
-			set.add(z);
-			TestData datum = new TestData(set, BigInteger.valueOf(result));
-			testData.add(datum);
-			population.testSet = testData;
-		}
-
-		System.out.println("Test data = " + testData);
-		population.setTestData(testData);
-
-		//System.out.println("Fittest = " + population.getFittest().toString());
-		System.out.println("Generations = " + generation + " Gene additions = " + population.mutations);
-
-		Chromosome c = new Chromosome(2);
-		ArrayList<Gene> genes = new ArrayList<Gene>();
-		ArrayList<Node> params = new ArrayList<Node>();
-
-		ParamNode xNode = new ParamNode(0);
-		ParamNode yNode = new ParamNode(1);
-		ParamNode zNode = new ParamNode(2);
-		
-		params.add(yNode);
-		params.add(xNode);
-		Operand op = new MathOperand(MathOperand.Operation.DIVIDE);
-		Node node = new FunctionNodeBase(op, params);
-		Gene xDivYgene = new Gene(node);
-
-		Operand op2 = new MathOperand(MathOperand.Operation.TIMES);
-		ArrayList<Node> params2 = new ArrayList<Node>();
-		params2.add(new ConstNode(BigInteger.valueOf(2)));
-		params2.add(zNode);
-		Node node2 = new FunctionNodeBase(op2, params2);
-		Gene twogene = new Gene(node2);
-
-		op = new MathOperand(MathOperand.Operation.TIMES);
-		params = new ArrayList<Node>();
-		params.add(xNode);
-		params.add(new ConstNode(BigInteger.valueOf(9)));
-		node = new FunctionNodeBase(op, params);
-		Gene nineXgene = new Gene(node);
-
-		genes.add(xDivYgene);
-		genes.add(twogene);
-		genes.add(nineXgene);
-		c.setGenes(genes);
-		population.chromosomes.set(18, c);
-		population.calculateFitness();
-		population.sort();
-
-//		System.out.println("Fitness of Perfect Chromosome = " + population.calculateChromosomeFitness(c) + " " + c);
-		System.out.println("Most fit: " + population.chromosomes.get(0) + "\nLeast fit: " + population.chromosomes.get(population.chromosomes.size() - 1));
-
-		//generation++;
-		// population.doCrossovers();
-		// population.sort();
-		// population.doMutations();
-		//population.sort();
-
+		BigInteger goal = new BigInteger("1928374619832746891327456918327468913274591832754918327408345120394871328956109483750832410283746091827364091823468234709128347091832");
+		Population population = new Population(goal, 48);
+		population.run();
 	}
 
 }

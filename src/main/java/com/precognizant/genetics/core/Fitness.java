@@ -19,7 +19,6 @@
 package com.precognizant.genetics.core;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 
 /**
  * @author Christopher Steel - Software AG Government Solutions
@@ -33,8 +32,8 @@ public interface Fitness extends Serializable {
 	 * Evaluates the fitness of an individual chromosome.
 	 * 
 	 * @param chromosome The chromosome to evaluate
-	 * @return A BigDecimal representing the fitness. Typically, 0 will be best 
+	 * @return A java.lang.Number representing the fitness. Typically, 0 will be best 
 	 * and higher numbers will represent less fit chromosomes
 	 */
-	public BigDecimal evaluate(Chromosome chromosome);
+	public Number evaluate(Chromosome chromosome);
 }

@@ -1,7 +1,7 @@
 /*
- * @(#)Node.java $Date: Feb 15, 2011 6:28:27 PM $
+ * @(#)Goal.java $Date: Nov 16, 2015 11:03:45 PM $
  * 
- * Copyright 2011 FortMoon Consulting, Inc. All Rights Reserved.
+ * Copyright © 2015 FortMoon Consulting, Inc. All Rights Reserved.
  * 
  * This software is the confidential and proprietary information of FortMoon
  * Consulting, Inc. ("Confidential Information"). You shall not disclose such
@@ -16,23 +16,13 @@
  * DERIVATIVES.
  * 
  */
-package com.precognizant.genetics.node;
-
-import java.math.BigInteger;
-import java.util.ArrayList;
+package com.precognizant.genetics.core;
 
 /**
  * @author Christopher Steel - FortMoon Consulting, Inc.
  *
- * @since Jan 29, 2011 2:19:14 AM
+ * @since Nov 16, 2015 11:03:45 PM
  */
-public interface Node {
-//	public <T extends Node> Number evaluate(ArrayList<T> args);
+public interface Goal {
 
-	/**
-	 * @param args
-	 * @return
-	 */
-	public BigInteger evaluate(ArrayList<BigInteger> args);
 }
-

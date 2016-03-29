@@ -51,7 +51,6 @@ public class ConstNode extends ParamNode {
 	 */
 	@Override
 	public <T extends Node> Number evaluate(ArrayList<T> args) {
-		// TODO Auto-generated method stub
 		return constant;
 	}
 
