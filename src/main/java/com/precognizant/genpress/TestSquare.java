@@ -45,7 +45,7 @@ public class TestSquare {
  		byte[] stringByte = "21094136".getBytes();
  		System.out.println("String size = " + stringByte.length);
  		byte numByte = Long.valueOf(op.first).byteValue();
- 		System.out.println("numByte = " + Long. (numByte);
+ 		System.out.println("numByte = " + numByte);
 	}
 
 }

@@ -1,7 +1,7 @@
 /*
-  * @(#)FunctionNodeBase.java $Date: Feb 15, 2011 6:28:27 PM $
+ * @(#)FileUtilsTest.java $Date: Aug 18, 2016 9:50:59 PM $
  * 
- * Copyright 2011 FortMoon Consulting, Inc. All Rights Reserved.
+ * Copyright © 2016 FortMoon Consulting, Inc. All Rights Reserved.
  * 
  * This software is the confidential and proprietary information of FortMoon
  * Consulting, Inc. ("Confidential Information"). You shall not disclose such
@@ -16,36 +16,45 @@
  * DERIVATIVES.
  * 
  */
-package com.precognizant.genetics.node;
+package com.precognizant.genpress;
 
-import java.util.ArrayList;
-
-import com.precognizant.genetics.operand.Operand;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author Christopher Steel - FortMoon Consulting, Inc.
  *
- * @since Jan 30, 2011 11:01:34 AM
+ * @since Aug 18, 2016 9:50:59 PM
  */
-public class FunctionNodeBase extends FunctionNode {
+public class FileUtilsTest {
 
 	/**
-	 * @param operand
-	 * @param paramList
+	 * @throws java.lang.Exception
 	 */
-	public <T extends Node> FunctionNodeBase(Operand operand, ArrayList<T> paramList) {
-		super(operand, paramList);
+	@Before
+	public void setUp() throws Exception {
 	}
 
-	/* (non-Javadoc)
-	 * @see com.fortmoon.genetics.Node#evaluate(java.util.ArrayList)
+	/**
+	 * Test method for {@link com.precognizant.genpress.FileUtils#parseFile(java.io.File, int)}.
 	 */
-	@Override
-	public <T extends Node> Number evaluate(ArrayList<T> args) {
-
-		Number evaluation = operand.evaluate(paramList.get(0).evaluate(args), paramList.get(1).evaluate(args));
-		return evaluation;
-//		return operand.evaluate(args);
+	@Test
+	public void testParseFileFileInt() {
 	}
+
+	/**
+	 * Test method for {@link com.precognizant.genpress.FileUtils#parseFile(java.io.File)}.
+	 */
+	@Test
+	public void testParseFileFile() {
+	}
+
+	/**
+	 * Test method for {@link com.precognizant.genpress.FileUtils#getFirstSegment(java.io.File)}.
+	 */
+	@Test
+	public void testGetFirstSegment() {
+	}
+
 
 }

@@ -18,8 +18,6 @@
  */
 package com.precognizant.genetics.node;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
 
 /**
  * @author Christopher Steel - FortMoon Consulting, Inc.
@@ -27,12 +25,14 @@ import java.util.ArrayList;
  * @since Jan 29, 2011 2:19:14 AM
  */
 public interface Node {
-//	public <T extends Node> Number evaluate(ArrayList<T> args);
 
+	public int size();
+	
 	/**
 	 * @param args
 	 * @return
 	 */
-	public BigInteger evaluate(ArrayList<BigInteger> args);
+	public <T extends Node> Number evaluate();
+
 }
 

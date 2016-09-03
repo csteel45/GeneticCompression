@@ -18,54 +18,33 @@
  */
 package com.precognizant.genetics.node;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.math.BigInteger;
 
 /**
  * @author Christopher Steel - FortMoon Consulting, Inc.
  * 
  * @since Jan 29, 2011 2:22:40 AM
  */
-public class ConstNode extends ParamNode {
-	protected Number constant;
+public class ConstNode extends BaseNode {
 
 	/**
-	 * @param number
+	 * Creates a ConstNode with constant set to number.
+	 * 
+	 * @param number The number that represents the constant.
 	 */
 	public ConstNode(Number number) {
-		this.constant = number;
+		this.value = number;
+		nodeString = toString();
+	}
+	
+	public static void main(String[] args) {
+		BigInteger bi = new BigInteger("18446744073709551615");
+		Node cn = new ConstNode(bi);
+		System.out.println("64bit BI = " + cn);
+		bi = new BigInteger("18446744073709551616");
+		cn = new ConstNode(bi);
+		System.out.println("65bit BI = " + cn);
+		System.out.println("Max long =  " + Long.MAX_VALUE);
 	}
 
-	public Object getConstant() {
-		return constant;
-	}
-
-	public void setConstant(Number constant) {
-		this.constant = constant;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.fortmoon.genetics.Node#evaluate(java.util.ArrayList)
-	 */
-	@Override
-	public <T extends Node> Number evaluate(ArrayList<T> args) {
-		return constant;
-	}
-
-	public String toString() {
-		if (constant instanceof Integer)
-			return ((Integer) constant).toString();
-		if (constant instanceof Long)
-			return ((Long) constant).toString();
-		if (constant instanceof Float)
-			return ((Float) constant).toString();
-		if (constant instanceof Double)
-			return ((Double) constant).toString();
-		if (constant instanceof BigDecimal)
-			return ((BigDecimal) constant).toString();
-
-		return new String("Unknown number type: " + constant);
-	}
 }

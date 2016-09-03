@@ -24,6 +24,7 @@ import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 
+import com.precognizant.genetics.node.ConstNode;
 import com.precognizant.genetics.operand.MathOperand;
 import com.precognizant.genpress.Compress;
 
@@ -41,7 +42,7 @@ public class Gene {
 		BigInteger param2 = BigInteger.valueOf((long)(Math.random()*1000.0));
 		operand = new MathOperand(MathOperand.Operation.POWER);
 		System.out.println("Param 1 = " + param1 + " Param 2 = " + param2);
-		result = operand.evaluate(param1, param2);
+		result = (BigInteger) operand.evaluate(new ConstNode(param1), new ConstNode(param2));
 	}
 	
 	public String toString() {

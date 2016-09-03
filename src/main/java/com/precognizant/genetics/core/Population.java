@@ -128,7 +128,7 @@ public class Population implements Serializable {
 			if (Rand.nextInt(sizeMutationRate) == 1) {
 				mutations++;
 				//System.out.println("Adding a gene. Length = " + (c.getGenes().size() + 1));
-				Gene newGene = new Gene();
+				Gene newGene = new Gene(10);
 				c.getGenes().add(newGene);
 				// System.out.println("adding new Gene: " + newGene);
 			}

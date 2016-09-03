@@ -55,11 +55,22 @@ public class MathOperand implements Operand {
 				return x.multiply(y);
 			}
 		},
-
+		DIVIDE {
+			@SuppressWarnings("unchecked")
+			BigInteger eval(BigInteger x, BigInteger y) {
+				return x.divide(y);
+			}
+		},
 		POWER {
 			@SuppressWarnings("unchecked")
 			BigInteger eval(BigInteger x, BigInteger y) {
-				return x.pow(y.intValue());
+				System.out.println("POWER called: " + x + " ^ " + y.intValue());
+				int pow = y.intValue();
+				if(pow > Integer.MAX_VALUE/1000000) {
+					pow = y.intValue() & 0x0000ffff;
+					System.out.println("POWER now: " + x + " ^ " + pow);
+				}
+				return x.pow(pow);
 			}
 		};
 		
@@ -72,7 +83,7 @@ public class MathOperand implements Operand {
 				BigInteger result = BigInteger.ZERO;
 				while(count.compareTo(bY) == -1) {
 					count = count.add(BigInteger.ONE);
-					// FIXME: This doesn't work due to runcation to int.!!!
+					// FIXME: This doesn't work due to truncation to int.!!!
 					result = result.add(new BigInteger(x.toString()).pow(y.intValue()));
 					//System.out.println("Count = " + count + " bY = " + bY);
 				}
@@ -92,14 +103,13 @@ public class MathOperand implements Operand {
 		this.operation = op;
 	}
 
-	public BigInteger evaluate(ArrayList<BigInteger> args) {
-		return this.operation.eval(args.get(0), args.get(1));
+	/* (non-Javadoc)
+	 * @see com.precognizant.genetics.operand.Operand#evaluate(com.precognizant.genetics.node.Node, com.precognizant.genetics.node.Node)
+	 */
+	public Number evaluate(Node param1, Node param2) {
+		return this.operation.eval((BigInteger)param1.evaluate(), (BigInteger)param2.evaluate());
 	}
-
-	public BigInteger evaluate(BigInteger arg0, BigInteger arg1) {
-		return this.operation.eval(arg0, arg1);
-	}
-
+	
 	public Operation getOperation() {
 		return operation;
 	}
@@ -111,16 +121,16 @@ public class MathOperand implements Operand {
 	public static void main(String[] args) {
 		ArrayList<BigInteger> params = new ArrayList<BigInteger>();
 		BigInteger param1 = new BigInteger("12837469341234");
-		BigInteger param2 = new BigInteger("12345");
+		BigInteger param2 = new BigInteger("111");
 		params.add(param1);
 		params.add(param2);
 
 		for (Operation op : Operation.values()) {
 			//MathOperand math = new MathOperand(op);
-			System.out.println("Integer Eval of 1283746941234 " + op.toString() + " 1434 = " + op.eval(param1, param2));
+			System.out.println("Integer Eval of 12837469341234 " + op.toString() + "\t1434 = " + op.eval(param1, param2));
 		}
 		BigInteger res = Operation.POWER.eval(param1, param2);
-		System.out.println("Byte count of POW: " + res.bitCount() / 8);
+		System.out.println("Bit length of POW: " + res.bitLength());
 		System.out.println("Result ADD: " + Operation.PLUS.eval(res, res));
 		
 //		System.out.println("Powpow 5, 20 = " + new MathOperand(Operation.POWPOW).evaluate(BigInteger.valueOf(5), BigInteger.valueOf(20)));

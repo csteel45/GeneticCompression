@@ -27,9 +27,8 @@ import com.precognizant.genetics.core.Gene;
 import com.precognizant.genetics.core.Population;
 import com.precognizant.genetics.data.TestData;
 import com.precognizant.genetics.node.ConstNode;
-import com.precognizant.genetics.node.FunctionNodeBase;
+import com.precognizant.genetics.node.FunctionNode;
 import com.precognizant.genetics.node.Node;
-import com.precognizant.genetics.node.ParamNode;
 import com.precognizant.genetics.operand.MathOperand;
 import com.precognizant.genetics.operand.MathOperand.Operation;
 import com.precognizant.genetics.util.Rand;
@@ -58,7 +57,7 @@ public class FunctionEnvironment extends Thread implements Environment {
 	 */
 	public FunctionEnvironment(int populationSize) {
 		super("Main");
-		setPopulation(new Population(populationSize, 0));
+		setPopulation(new Population(BigInteger.valueOf(populationSize), 0));
 	}
 
 	/** 
@@ -72,12 +71,13 @@ public class FunctionEnvironment extends Thread implements Environment {
 		BigInteger result = (new BigInteger("298374234"));
 		System.out.println("Result: " + result);
 
-		TestData datum = new TestData(set, result);
+/*		TestData datum = new TestData(set, result);
 		testData.add(datum);
 
 		System.out.println("Test data = " + testData);
 		population.setTestData(testData);
-	}
+*/
+		}
 		
 	public void run() {
 		long generation = 0;
@@ -99,7 +99,7 @@ public class FunctionEnvironment extends Thread implements Environment {
 	public void refactorFittest() {
 		Chromosome c = population.getFittest();
 		ArrayList<Gene> genes = c.getGenes();
-		// Create a new ArrayList to hold each of the inputs plus a constant (as the last param)
+/*		// Create a new ArrayList to hold each of the inputs plus a constant (as the last param)
 		ArrayList<BigInteger> paramList = new ArrayList<BigInteger>(population.getTestData().get(0).getInputs().size() + 1);
 		ArrayList<String> termList = new ArrayList<String>();
 
@@ -108,7 +108,7 @@ public class FunctionEnvironment extends Thread implements Environment {
 		}
 		
 		for(Gene gene : genes) {
-			FunctionNodeBase node = (FunctionNodeBase)gene.getNode();
+			FunctionNode node = (FunctionNode)gene.getNode();
 			if(((MathOperand)node.getOperand()).getOperation().equals(Operation.PLUS)) {
 				for(Node param : node.getParamList()) {
 					if(param instanceof ConstNode) {
@@ -181,7 +181,7 @@ public class FunctionEnvironment extends Thread implements Environment {
 		for(String term : termList) {
 			terms += term + " + ";
 		}
-		
+*/		
 /*		System.out.println("Refactored equation: " + 
 				terms
 				+ paramList.get(0) + "x"
