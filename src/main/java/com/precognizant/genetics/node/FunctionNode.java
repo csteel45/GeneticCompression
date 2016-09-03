@@ -18,8 +18,6 @@
  */
 package com.precognizant.genetics.node;
 
-import java.util.ArrayList;
-
 import com.precognizant.genetics.operand.Operand;
 
 /**
@@ -27,38 +25,49 @@ import com.precognizant.genetics.operand.Operand;
  *
  * @since Jan 29, 2011 2:44:49 AM
  */
-public abstract class FunctionNode {
+public class FunctionNode extends BaseNode {
 	protected Operand operand;
-	protected ArrayList<Node> paramList;
+	protected Node param1;
+	protected Node param2;
 	
-	@SuppressWarnings("unchecked")
-	public <T extends Node> FunctionNode(Operand operand, ArrayList<T> paramList2) {
+	public <T extends Node> FunctionNode() {
+		this.operand = NodeFactory.getRandomOperand();
+		this.param1 = NodeFactory.getRandomNode();
+		this.param2 = NodeFactory.getRandomNode();
+	}
+	
+	public <T extends Node> FunctionNode(Node param1, Operand operand, Node param2) {
+		System.out.println("FunctionNode(param1, operand, param2) called.");
 		this.operand = operand;
-		this.paramList = (ArrayList<Node>) paramList2;
+		this.param1 = param1;
+		this.param2 = param2;
+//		System.out.println("Creating function node: " + toString());
+//		System.out.println("Eval start");
+		value = this.operand.evaluate(param1, param2);
+//		System.out.println("Eval end");
 	}
 	
-	public Number evaluate() {
-		return operand.evaluate(paramList);
-	}
-	
-	public String toString() {
-		return operand.toString() + "(" + paramList.toString() + ")";
-	}
-
 	/**
 	 * @param args
 	 * @return
 	 */
-	public  <T extends Node> Number evaluate(ArrayList<T> args) {
-		return operand.evaluate(paramList);
+	public <T extends Node> Number evaluate() {
+		value = operand.evaluate(param1, param2);
+		return value;
 	}
-	
+
 	public Operand getOperand() {
 		return operand;
 	}
 	
-	public ArrayList<Node> getParamList() {
-		return paramList;
+	@Override
+	public String toString() {
+		return "(" + param1 + " " + operand.toString() + " " + param2 + ") = " + evaluate() + " size = " + size();
+	}
+
+	public static void main(String[] args) {
+		FunctionNode node = new FunctionNode();
+		System.out.println("Node = [" + node + "] Evaluate = " + node.evaluate());
 	}
 	
 }

@@ -46,7 +46,7 @@ public class Chromosome implements Runnable, Comparable<Object> {
 		this.goal = goal;
 		genes = new ArrayList<Gene>();
 		// Add genes to the chromosome until result is as big as goal
-		while (goal.compareTo(this.fitness) == 1) {
+		while (goal.compareTo(this.getFitness()) == 1) {
 			// Let's create a gene with the right order of magnitude
 			genes.add(createGene());
 		}
@@ -54,7 +54,7 @@ public class Chromosome implements Runnable, Comparable<Object> {
 	}
 
 	private Gene createGene() {
-		return new Gene();
+		return new Gene(10);
 	}
 
 	public void mutate() {
@@ -77,14 +77,13 @@ public class Chromosome implements Runnable, Comparable<Object> {
 			result = result.add(gene.getResult());
 			//System.out.println("Gene " + gene + " Result for " + x + " " + y + " = " + result);
 		}
-		fitness = goal.subtract(result).abs();
-		return fitness;
+		fitness = (Fitness) goal.subtract(result).abs();
+		return (BigInteger) fitness;
 	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Runnable#run()
 	 */
-	@Override
 	public void run() {
 //		eval();
 	}
@@ -94,11 +93,10 @@ public class Chromosome implements Runnable, Comparable<Object> {
 	 * 
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
-	@Override
 	public int compareTo(Object o) {
 		if (o instanceof Chromosome) {
 			Chromosome c = (Chromosome) o;
-			return (this.getFitness().compareTo(c.fitness));
+			return (this.getFitness().compareTo((BigInteger) c.fitness));
 		}
 		System.out.println("Chromosome.compareTo failed instanceof test. Exitting.");
 		System.exit(-1);

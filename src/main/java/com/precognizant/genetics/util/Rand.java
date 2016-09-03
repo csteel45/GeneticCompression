@@ -18,8 +18,8 @@
  */
 package com.precognizant.genetics.util;
 
+import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.util.Random;
 
 /**
  * @author Christopher Steel - FortMoon Consulting, Inc.
@@ -37,7 +37,7 @@ public class Rand {
 	}
 	
 	public static void init(long seed) {
-		System.err.println("--------------------------------------- USING SEED");
+		System.out.println("--------------------------------------- USING SEED");
 		instance.setSeed(Long.toString(System.currentTimeMillis()).getBytes());
 		//Rand.instance = new Random(System.currentTimeMillis());
 	}
@@ -47,7 +47,7 @@ public class Rand {
 	}
 	
 	public static int nextInt() {
-		return instance.nextInt();
+		return Math.abs(instance.nextInt());
 	}
 
 	public static int nextInt(int top) {
@@ -60,6 +60,23 @@ public class Rand {
 	
 	public static double next() {
 		return instance.nextInt(10) * 1.0;
+	}
+
+	/**
+	 * @return
+	 */
+	public static Number nextLong() {
+//		System.out.println("NextLong start");
+		long rand = instance.nextInt(Integer.MAX_VALUE);
+		BigInteger bi = BigInteger.valueOf(rand);
+//		System.out.println("Rand1 = " + rand + "\tBS = " + bi.toString(2));
+		bi = bi.shiftLeft(32);
+//		System.out.println("Rand2 = " + rand + "\tBS = " + bi.toString(2));
+		rand = instance.nextInt(Integer.MAX_VALUE);
+		bi = bi.add(BigInteger.valueOf(rand));
+//		System.out.println("Rand3 = " + rand + "\tBS = " + bi.toString(2));
+//		System.out.println("NextLong end");
+		return bi;
 	}
 
 }

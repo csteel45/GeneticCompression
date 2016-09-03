@@ -1,5 +1,5 @@
 /*
- * @(#)Operand.java $Date: Feb 15, 2011 6:28:27 PM $
+ * @(#)TestData.java $Date: Jun 9, 2011 10:38:23 PM $
  * 
  * Copyright 2011 FortMoon Consulting, Inc. All Rights Reserved.
  * 
@@ -16,24 +16,35 @@
  * DERIVATIVES.
  * 
  */
-package com.precognizant.genetics.operand;
+package com.precognizant.genetics.data;
 
-import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.util.ArrayList;
-
-import com.precognizant.genetics.node.Node;
+import java.util.HashMap;
 
 /**
  * @author Christopher Steel - FortMoon Consulting, Inc.
  *
- * @since Jan 29, 2011 7:53:25 AM
+ * @since Jun 9, 2011 10:38:23 PM
  */
-public interface Operand {
-	/**
-	 * @param param1
-	 * @param param2
-	 * @return
-	 */
-	public Number evaluate(Node param1, Node param2);
+public class TestData {
+	private BigDecimal output;
+	private ArrayList<BigDecimal> inputs;
 	
+	public TestData(ArrayList<BigDecimal> inputs, BigDecimal output) {
+		this.inputs = inputs;
+		this.output = output;
+	}
+	
+	public ArrayList<BigDecimal> getInputs() {
+		return inputs;
+	}
+	
+	public BigDecimal getOutput() {
+		return output;
+	}
+	
+	public String toString() {
+		return new String("inputs: " + inputs + " output: " + output);
+	}
 }
