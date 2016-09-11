@@ -13,7 +13,7 @@ public class TestSquare {
 		System.out.println("Result = " + result);
 		while(result.abs().compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > 0) {
 			count++;
-			result = FileUtils.sqrt(result);
+			result = NumUtils.sqrt(result);
 		}
 		System.out.println("Square = " + result + " count = " + count);
 		Algo algo = new Algo();
