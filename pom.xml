@@ -4,7 +4,10 @@
   <artifactId>GeneticCompression</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>Genetic Compression</name>
-  <description>Use a genetic algorith to compress arbitrary data</description>
+  <description>Use a genetic algorithm to compress arbitrary data</description>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
   <build>
     <testSourceDirectory>src/test</testSourceDirectory>
     <plugins>
