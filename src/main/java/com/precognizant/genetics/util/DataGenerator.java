@@ -1,19 +1,9 @@
 /*
- * Copyright 2014 Software AG Government Solutions
- * All Rights Reserved.
+ * DataGenerator.java
  *
- * This software is the confidential and proprietary information of Softwre AG
- * Government Solutions ("Confidential Information").  You shall not
- * disclose such Confidential Information and shall use it only in
- * accordance with the terms of the license agreement you entered into
- * with Software AG Government Soltuions.
- *
- * SOFTWARE AG GS MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE
- * SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
- * PURPOSE, OR NON-INFRINGEMENT. SOFTWARE AG GS SHALL NOT BE LIABLE FOR ANY DAMAGES
- * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING
- * THIS SOFTWARE OR ITS DERIVATIVES.
+ * Copyright (c) 2011-2026 Chris Steel (FortMoon Consulting, Inc.)
+ * SPDX-License-Identifier: MIT
+ * See the LICENSE file in the project root for the full license text.
  */
 
 package com.precognizant.genetics.util;

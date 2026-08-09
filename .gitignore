@@ -1,1 +1,10 @@
 target/
+*.class
+*.log
+.svn/
+.DS_Store
+
+# Excluded: sample data (contained photos of identifiable people) + binary UML model
+data/
+*.eap
+*.ldb
