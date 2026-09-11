@@ -48,6 +48,7 @@ __all__ = [
     "Recipe",
     "EvalStats",
     "validate",
+    "apply_op",
     "evaluate",
     "evaluate_with_stats",
     "decode",
@@ -244,11 +245,18 @@ class _Counter:
         self.max_bits = 0
 
 
-def _apply(op: OpSpec, left: int, right: int, limits: Limits) -> int:
-    """Apply ``op`` with pre-checks that refuse to build oversized values.
+def apply_op(op: OpSpec, left: int, right: int, limits: Limits = DEFAULT_LIMITS) -> int:
+    """Apply ``op`` to two non-negative values, with pre-checks on the result size.
 
     The checks run *before* the arithmetic. Computing ``2 ** 10**9`` and then
     noticing it is too large is not a bound; it is a way to exhaust memory.
+
+    Search code calls this directly on already-known child values, which avoids
+    re-walking a subtree that was evaluated a moment ago.
+
+    Raises:
+        EvaluationError: if the operation would breach ``limits`` or produce a
+            negative value.
     """
     if op is ADD:
         return left + right
@@ -302,7 +310,7 @@ def _eval(expr: Expr, limits: Limits, state: _Counter) -> int:
         state.ops += 1
         if state.ops > limits.max_ops:
             raise EvaluationError(f"operation count exceeds max_ops {limits.max_ops}")
-        value = _apply(expr.op, left, right, limits)
+        value = apply_op(expr.op, left, right, limits)
     else:  # pragma: no cover - guarded by Expr construction
         raise GrammarError(f"unknown expression node {type(expr).__name__}")
 
