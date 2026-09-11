@@ -73,7 +73,7 @@ class SearchResult:
     used_fallback: bool
     exact: bool
     breakdown: SizeBreakdown
-    work: dict[str, int | float | str] = field(default_factory=dict)
+    work: dict[str, object] = field(default_factory=dict)
     elapsed_seconds: float = 0.0
     decode_seconds: float = 0.0
 
@@ -107,7 +107,7 @@ def make_result(
     status: SearchStatus,
     algorithm: str,
     used_fallback: bool,
-    work: dict[str, int | float | str] | None = None,
+    work: dict[str, object] | None = None,
     elapsed_seconds: float = 0.0,
     limits: Limits = DEFAULT_LIMITS,
 ) -> SearchResult:

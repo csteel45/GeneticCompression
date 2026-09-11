@@ -293,7 +293,7 @@ def search(
         status = SearchStatus.BUDGET_EXHAUSTED
 
     elapsed = time.perf_counter() - started
-    work: dict[str, int | float | str] = {
+    work: dict[str, object] = {
         "nodes_examined": state.nodes,
         "values_reached": len(state.best_by_value),
         "max_expression_bytes": config.max_expression_bytes,
