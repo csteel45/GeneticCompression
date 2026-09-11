@@ -1,0 +1,163 @@
+"""Recipe grammar: opcodes, arities, and evaluation limits.
+
+The grammar is versioned because the decoder cannot reconstruct anything
+without knowing which opcode table produced a recipe. ``GRAMMAR_VERSION`` is
+part of every serialized artifact and every experiment record.
+
+Grammar version 1 is deliberately small. Every operation is closed over the
+non-negative integers, which keeps the value domain identical to the unsigned
+byte-segment model in :mod:`genetic_compression.bytes_model`:
+
+===========  =======  ====================================================
+Opcode       Arity    Meaning
+===========  =======  ====================================================
+``CONST``    leaf     A non-negative integer stored as a varint.
+``LITERAL``  leaf     Raw bytes stored verbatim; the honest fallback.
+``ADD``      2        ``left + right``
+``SUB``      2        ``left - right``; a negative result is invalid.
+``MUL``      2        ``left * right``
+``SHL``      2        ``left << right``
+``XOR``      2        ``left ^ right``
+``AND``      2        ``left & right``
+``OR``       2        ``left | right``
+``POW``      2        ``left ** right``, with a hard exponent bound.
+===========  =======  ====================================================
+
+There is no division, modulo, or right shift in version 1: every one of those
+discards information, which makes them useful for *approximate* search and
+actively misleading for a lossless target. Adding them is a grammar-version
+change, not an edit.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Final
+
+__all__ = [
+    "GRAMMAR_VERSION",
+    "OpSpec",
+    "CONST",
+    "LITERAL",
+    "ADD",
+    "SUB",
+    "MUL",
+    "SHL",
+    "XOR",
+    "AND",
+    "OR",
+    "POW",
+    "BINARY_OPS",
+    "FIRST_SLICE_OPS",
+    "OPS_BY_NAME",
+    "OPS_BY_CODE",
+    "Limits",
+    "DEFAULT_LIMITS",
+]
+
+GRAMMAR_VERSION: Final[int] = 1
+
+
+@dataclass(frozen=True, slots=True)
+class OpSpec:
+    """A single grammar symbol.
+
+    Attributes:
+        name: Stable textual name, used in reports and text rendering.
+        code: Stable opcode byte. Never reuse a code across grammar versions.
+        arity: 0 for leaves, 2 for binary operations.
+        commutative: True when ``op(a, b) == op(b, a)``; search uses this to
+            avoid enumerating mirrored duplicates.
+    """
+
+    name: str
+    code: int
+    arity: int
+    commutative: bool = False
+
+    def __str__(self) -> str:  # pragma: no cover - trivial
+        return self.name
+
+
+# Leaves.
+CONST: Final = OpSpec("CONST", 0x00, 0)
+LITERAL: Final = OpSpec("LITERAL", 0x01, 0)
+
+# Binary operations.
+ADD: Final = OpSpec("ADD", 0x10, 2, commutative=True)
+SUB: Final = OpSpec("SUB", 0x11, 2)
+MUL: Final = OpSpec("MUL", 0x12, 2, commutative=True)
+SHL: Final = OpSpec("SHL", 0x13, 2)
+XOR: Final = OpSpec("XOR", 0x14, 2, commutative=True)
+AND: Final = OpSpec("AND", 0x15, 2, commutative=True)
+OR: Final = OpSpec("OR", 0x16, 2, commutative=True)
+POW: Final = OpSpec("POW", 0x17, 2)
+
+BINARY_OPS: Final[tuple[OpSpec, ...]] = (ADD, SUB, MUL, SHL, XOR, AND, OR, POW)
+
+#: The operation subset named as the "first implementation slice" in
+#: docs/plans/python-conversion-plan.md. Useful as a cheap default for
+#: exhaustive search, which pays for every extra operation combinatorially.
+FIRST_SLICE_OPS: Final[tuple[OpSpec, ...]] = (ADD, SUB, MUL, SHL)
+
+_ALL_OPS: Final[tuple[OpSpec, ...]] = (CONST, LITERAL) + BINARY_OPS
+
+OPS_BY_NAME: Final[dict[str, OpSpec]] = {op.name: op for op in _ALL_OPS}
+OPS_BY_CODE: Final[dict[int, OpSpec]] = {op.code: op for op in _ALL_OPS}
+
+assert len(OPS_BY_CODE) == len(_ALL_OPS), "duplicate opcode byte in grammar"
+
+
+@dataclass(frozen=True, slots=True)
+class Limits:
+    """Hard resource bounds for recipe validation and evaluation.
+
+    Without these, ``POW`` alone can turn a nine-byte recipe into a multi-gigabyte
+    intermediate value and an unbounded decode time. A recipe that cannot be
+    decoded inside stated limits is not a compression result, so the limits are
+    part of the artifact's contract and are recorded with every experiment.
+
+    Attributes:
+        max_depth: Maximum expression-tree depth (a leaf has depth 1).
+        max_ops: Maximum number of binary operations evaluated.
+        max_bits: Maximum bit length of any intermediate or final value.
+        max_exponent: Maximum right-hand operand of ``POW``.
+        max_shift: Maximum right-hand operand of ``SHL``.
+        max_literal_bytes: Maximum payload length of a single ``LITERAL``.
+    """
+
+    max_depth: int = 12
+    max_ops: int = 64
+    max_bits: int = 4096
+    max_exponent: int = 64
+    max_shift: int = 4096
+    max_literal_bytes: int = 1 << 16
+
+    def __post_init__(self) -> None:
+        for field_name in (
+            "max_depth",
+            "max_ops",
+            "max_bits",
+            "max_exponent",
+            "max_shift",
+            "max_literal_bytes",
+        ):
+            value = getattr(self, field_name)
+            if not isinstance(value, int) or value < 0:
+                raise ValueError(f"{field_name} must be a non-negative int; got {value!r}")
+        if self.max_depth < 1:
+            raise ValueError("max_depth must be at least 1")
+
+    def as_dict(self) -> dict[str, int]:
+        """Return the limits as a JSON-serializable mapping for experiment records."""
+        return {
+            "max_depth": self.max_depth,
+            "max_ops": self.max_ops,
+            "max_bits": self.max_bits,
+            "max_exponent": self.max_exponent,
+            "max_shift": self.max_shift,
+            "max_literal_bytes": self.max_literal_bytes,
+        }
+
+
+DEFAULT_LIMITS: Final[Limits] = Limits()
