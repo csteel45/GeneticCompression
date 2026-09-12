@@ -46,11 +46,11 @@ from ..baselines import baseline_sizes
 from ..codec import encoded_size
 from ..fitness import FitnessScore, score
 from ..grammar import BINARY_OPS, DEFAULT_LIMITS, Limits, OpSpec
-from ..recipe import BinOp, Const, Expr, Recipe, depth
+from ..recipe import BinOp, Const, Expr, Recipe, RecipeError, depth, evaluate
 from . import SearchResult, SearchStatus, make_result
 from .exhaustive import fallback_recipe
 
-__all__ = ["GeneticConfig", "GenerationMetrics", "search"]
+__all__ = ["GeneticConfig", "GenerationMetrics", "search", "propose_generators"]
 
 ALGORITHM = "genetic"
 
@@ -280,17 +280,22 @@ def _tournament(
 # ---------------------------------------------------------------------------
 
 
-def search(
-    segment: bytes,
-    config: GeneticConfig = GeneticConfig(),
-) -> SearchResult:
-    """Evolve a recipe for ``segment``.
+@dataclass(slots=True)
+class _Run:
+    """Everything one evolution produced, before it is turned into a report."""
 
-    Returns the best exactly decoding artifact found, which is never worse than
-    the literal/constant fallback seeded into generation zero. The status is
-    never ``EXHAUSTED``: a stochastic search proves nothing about what does not
-    exist.
-    """
+    best_expr: Expr
+    best_score: FitnessScore
+    history: list[GenerationMetrics]
+    scores: dict[Expr, FitnessScore]
+    generations_run: int
+    baseline_name: str
+    baseline_bytes: int
+    timed_out: bool
+
+
+def _evolve(segment: bytes, config: GeneticConfig) -> _Run:
+    """Run the evolution loop; shared by :func:`search` and :func:`propose_generators`."""
     started = time.perf_counter()
     deadline = started + config.time_limit if config.time_limit else None
     rng = random.Random(config.seed)
@@ -364,28 +369,57 @@ def search(
             offspring.append(child)
         population = offspring
 
-    best_recipe = Recipe(expr=best_expr, segment_length=segment_length)
-    used_fallback = best_expr == fallback.expr
-    if not best_score.exact or encoded_size(best_recipe) > encoded_size(fallback):
-        # Never report something worse than the artifact we started from.
+    return _Run(
+        best_expr=best_expr,
+        best_score=best_score,
+        history=history,
+        scores=cache,
+        generations_run=generations_run,
+        baseline_name=baseline.name,
+        baseline_bytes=baseline.size,
+        timed_out=status is SearchStatus.BUDGET_EXHAUSTED,
+    )
+
+
+def search(
+    segment: bytes,
+    config: GeneticConfig = GeneticConfig(),
+) -> SearchResult:
+    """Evolve a recipe for ``segment``.
+
+    Returns the best exactly decoding artifact found, floored by the
+    literal/constant fallback so the result is never worse than simply storing
+    the segment. The status is never ``EXHAUSTED``: a stochastic search proves
+    nothing about what does not exist.
+    """
+    started = time.perf_counter()
+    run = _evolve(segment, config)
+    fallback = fallback_recipe(segment)
+
+    best_recipe = Recipe(expr=run.best_expr, segment_length=len(segment))
+    used_fallback = False
+    if not run.best_score.exact or encoded_size(best_recipe) > encoded_size(fallback):
         best_recipe, used_fallback = fallback, True
 
-    if best_score.exact and not used_fallback:
+    if run.timed_out:
+        status = SearchStatus.BUDGET_EXHAUSTED
+    elif run.best_score.exact and not used_fallback:
         status = SearchStatus.FOUND
+    else:
+        status = SearchStatus.LIMIT_REACHED
 
-    elapsed = time.perf_counter() - started
     work: dict[str, object] = {
-        "generations_run": generations_run,
+        "generations_run": run.generations_run,
         "population_size": config.population_size,
         "seed": config.seed,
-        "evaluations": len(cache),
-        "baseline": baseline.name,
-        "baseline_bytes": baseline.size,
-        "best_hamming": best_score.hamming,
+        "evaluations": len(run.scores),
+        "baseline": run.baseline_name,
+        "baseline_bytes": run.baseline_bytes,
+        "best_hamming": run.best_score.hamming,
         "fallback_bytes": encoded_size(fallback),
-        "beats_baseline": best_score.beats_baseline,
-        "best_score": best_score.as_dict(),
-        "fitness_curve": [row.as_dict() for row in history],
+        "beats_baseline": run.best_score.beats_baseline,
+        "best_score": run.best_score.as_dict(),
+        "fitness_curve": [row.as_dict() for row in run.history],
     }
     return make_result(
         recipe=best_recipe,
@@ -394,6 +428,36 @@ def search(
         algorithm=ALGORITHM,
         used_fallback=used_fallback,
         work=work,
-        elapsed_seconds=elapsed,
+        elapsed_seconds=time.perf_counter() - started,
         limits=config.limits,
     )
+
+
+def propose_generators(
+    segment: bytes,
+    config: GeneticConfig = GeneticConfig(),
+    count: int = 16,
+) -> list[Expr]:
+    """Return the expressions that came closest to ``segment``, best first.
+
+    Written for the hybrid experiments. A generator does not need to be exact --
+    it needs to predict well enough that the residual compresses -- and that is
+    precisely what this search's error term already optimizes. Only expressions
+    whose value fits the segment length are returned, since a prediction that
+    overflows the segment cannot be rendered.
+    """
+    run = _evolve(segment, config)
+    width = 8 * len(segment)
+    ranked = sorted(run.scores.items(), key=lambda item: item[1].key)
+    proposals: list[Expr] = []
+    for expr, _ in ranked:
+        try:
+            value = evaluate(expr, config.limits)
+        except RecipeError:
+            continue
+        if value.bit_length() > width:
+            continue
+        proposals.append(expr)
+        if len(proposals) >= count:
+            break
+    return proposals
