@@ -8,3 +8,18 @@ target/
 data/
 *.eap
 *.ldb
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+
+# Experiment output
+results/
+*.jsonl

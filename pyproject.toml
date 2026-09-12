@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "genetic-compression"
+version = "0.1.0"
+description = "Research harness for evolving compact recipes that regenerate byte segments exactly"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Chris Steel" }]
+keywords = ["genetic-programming", "compression", "research"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+# Standard library only. Do not add runtime dependencies without a documented
+# reason in docs/TODO.md or a plan under docs/plans/.
+dependencies = []
+
+[project.scripts]
+genetic-compression = "genetic_compression.experiments:main"
+
+[tool.setuptools]
+packages = ["genetic_compression", "genetic_compression.search"]
+
+# Tests use the standard-library `unittest` runner:
+#   python -m unittest discover -s tests -t .
