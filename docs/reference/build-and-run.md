@@ -1,7 +1,8 @@
 # Build and Run
 
-The Python research harness is the active development path. The Java project is
-retained as historical reference; see `docs/plans/python-conversion-plan.md`.
+The Python research harness is the active development path and lives at the
+repository root. The Java project is retained as historical reference under
+`legacy-java/`; see `docs/plans/python-conversion-plan.md`.
 
 ## Python Harness
 
@@ -40,47 +41,46 @@ python -m genetic_compression.experiments --help
 
 ## Java (legacy)
 
+The Maven project now lives under `legacy-java/`. Every path inside it
+(`pom.xml`, `src/main/java`, `src/test`, `target/`) is unchanged and relative to
+that directory, so Maven and Eclipse treat `legacy-java/` as the project root.
+
 ### Requirements
 
 - JDK compatible with the legacy Maven project.
 - Maven.
 
-The `pom.xml` currently has empty `source` and `target` values in
+The `pom.xml` still has empty `source` and `target` values in
 `maven-compiler-plugin`; expect this to need cleanup on modern Maven/JDK
 combinations.
 
 ### Commands
 
-Run all tests:
+Run from the repository root with `-f`:
 
 ```bash
-mvn test
+mvn -f legacy-java/pom.xml test
+mvn -f legacy-java/pom.xml -Dtest=NumUtilsTest test
+mvn -f legacy-java/pom.xml -Dtest=FileUtilsTest test
 ```
 
-Run a specific JUnit 4 test:
+Or from inside the project directory:
 
 ```bash
-mvn -Dtest=NumUtilsTest test
-mvn -Dtest=FileUtilsTest test
+cd legacy-java && mvn test
 ```
 
-The README mentions:
-
-```bash
-mvn install
-mvn exec:java
-```
-
-There is no `exec-maven-plugin` configuration yet, and several `main` methods
-depend on missing `data/` files, so treat those commands as historical until
-refreshed.
+The old README mentioned `mvn install` and `mvn exec:java`. There is no
+`exec-maven-plugin` configuration, and several `main` methods depend on missing
+`data/` files, so treat those commands as historical until refreshed.
 
 ## Verification Status on 2026-09-11
 
 In the current agent shell, `mvn test` could not be run because `mvn` is not
 installed. Java verification has not been performed in this environment.
 
-Existing checked workspace artifacts under `target/surefire-reports/` show:
+Existing checked workspace artifacts under `legacy-java/target/surefire-reports/`
+show (from a 2023 run, before the move):
 
 - `FileUtilsTest`: 3 tests run, 0 failures.
 - `NumUtilsTest`: 2 tests run, 1 failure in `testConvertToNumber`.

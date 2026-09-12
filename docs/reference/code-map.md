@@ -23,29 +23,34 @@
 
 ## Java (legacy, retained unmodified)
 
-## Compression Package
+The whole Maven project lives under `legacy-java/`: `pom.xml`, `src/`, the
+Eclipse metadata, and the stale `target/` build output. Paths below are relative
+to `legacy-java/src/main/java/com/precognizant/`.
 
-- `src/main/java/com/precognizant/genpress/Compress.java`: file segmentation and byte/number conversion probe.
-- `src/main/java/com/precognizant/genpress/FileUtils.java`: static file segmentation utilities.
-- `src/main/java/com/precognizant/genpress/NumUtils.java`: `BigInteger` conversion and integer square-root utilities.
-- `src/main/java/com/precognizant/genpress/Algo.java`: early operation-list experiment.
-- `src/main/java/com/precognizant/genpress/FunctionEnvironment.java`: thread-based population runner.
-- `src/main/java/com/precognizant/genpress/BigSquareRoot.java`: square-root exploration.
-- `src/main/java/com/precognizant/genpress/TestSquare.java`: scratch numeric probe.
+### Compression Package (`genpress`)
 
-## Genetic Programming Package
+- `genpress/Compress.java`: file segmentation and byte/number conversion probe.
+- `genpress/FileUtils.java`: static file segmentation utilities.
+- `genpress/NumUtils.java`: `BigInteger` conversion and integer square-root utilities.
+- `genpress/Algo.java`: early operation-list experiment.
+- `genpress/FunctionEnvironment.java`: thread-based population runner.
+- `genpress/BigSquareRoot.java`: square-root exploration.
+- `genpress/TestSquare.java`: scratch numeric probe.
 
-- `core/Population.java`: population lifecycle, crossover, mutation, and fittest selection.
-- `core/Chromosome.java`: list of genes scored against a `BigInteger` goal.
-- `core/Gene.java`: currently generates a powered constant and stores its result.
-- `core/Fitness.java`, `core/Goal.java`, `core/Environment.java`: early interfaces/markers.
-- `node/BaseNode.java`, `node/ConstNode.java`, `node/FunctionNode.java`, `node/Node.java`, `node/NodeFactory.java`, `node/NodeTree.java`: expression-tree model.
-- `operand/MathOperand.java`, `operand/Operand.java`: math operation abstraction.
-- `data/TestData.java`: simple input/output data holder.
-- `util/Rand.java`, `util/Log.java`, `util/DataGenerator.java`: support utilities.
+### Genetic Programming Package (`genetics`)
 
-## Tests
+- `genetics/core/Population.java`: population lifecycle, crossover, mutation, and fittest selection.
+- `genetics/core/Chromosome.java`: list of genes scored against a `BigInteger` goal.
+- `genetics/core/Gene.java`: generates a powered constant and stores its result.
+- `genetics/core/Fitness.java`, `Goal.java`, `Environment.java`: early interfaces/markers.
+- `genetics/node/BaseNode.java`, `ConstNode.java`, `FunctionNode.java`, `Node.java`, `NodeFactory.java`, `NodeTree.java`: expression-tree model.
+- `genetics/operand/MathOperand.java`, `Operand.java`: math operation abstraction.
+- `genetics/data/TestData.java`: simple input/output data holder.
+- `genetics/util/Rand.java`, `Log.java`, `DataGenerator.java`: support utilities.
 
-- `src/test/com/precognizant/genpress/FileUtilsTest.java`: placeholder tests.
-- `src/test/com/precognizant/genpress/NumUtilsTest.java`: conversion test with a known failing negative-number expectation.
+### Java Tests
 
+Under `legacy-java/src/test/com/precognizant/genpress/`:
+
+- `FileUtilsTest.java`: placeholder tests.
+- `NumUtilsTest.java`: conversion test with a known failing negative-number expectation.

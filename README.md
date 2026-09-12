@@ -10,9 +10,10 @@ recipe rather than the data. The research question is narrow and falsifiable:
 ## Status
 
 The **Python harness in `genetic_compression/` is the active research path**.
-The original Java implementation (2015–2016) is retained unmodified as
-historical reference; see `docs/architecture/current-codebase.md` for what the
-Python harness replaces and how the two differ on byte semantics.
+The original Java implementation (2015–2016) has been moved unmodified to
+[`legacy-java/`](legacy-java/) and is retained as historical reference; see
+`docs/architecture/current-codebase.md` for what the Python harness replaces and
+how the two differ on byte semantics.
 
 ## Quick start
 
@@ -55,8 +56,10 @@ data has no compact recipe under any small grammar, and the reports say so.
 
 ## Java (legacy)
 
+The original Maven project is in [`legacy-java/`](legacy-java/), unmodified.
+
 ```bash
-mvn test
+mvn -f legacy-java/pom.xml test
 ```
 
 Maven is not installed in the current development environment, so no Java
@@ -65,9 +68,9 @@ verification has been run there. Several `main` methods depend on the excluded
 
 ## Notes
 
-- The `BigDecimal` square-root helper in `core/Gene.java` is adapted from a
-  CodeProject tip by **Luciano Culacciatti** (attributed in-source with the
-  original URL).
+- The `BigDecimal` square-root helper in `legacy-java/.../genetics/core/Gene.java`
+  is adapted from a CodeProject tip by **Luciano Culacciatti** (attributed
+  in-source with the original URL).
 - The original `data/` directory (sample inputs) is intentionally excluded from
   this repository: it contained photos of identifiable people. All test and
   experiment data is synthetic and generated.

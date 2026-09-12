@@ -2,7 +2,7 @@
 
 Owner: Chris Steel / FortMoon Consulting, Inc.
 Status: active
-Last reviewed: 2026-09-11
+Last reviewed: 2026-09-12
 
 This file is the single source of truth for coding assistants working in this repository. Agent-specific stubs such as `CLAUDE.md` should point here and avoid duplicating architecture, coding standards, or task workflow.
 
@@ -17,6 +17,9 @@ This file is the single source of truth for coding assistants working in this re
 7. Run the narrowest useful verification available in the current environment and report anything that could not be run.
 
 ```
+genetic_compression/   # active Python harness
+tests/                 # Python tests
+legacy-java/           # original Java/Maven project, unmodified
 docs/
 ├── README.md
 ├── TODO.md
@@ -41,14 +44,14 @@ docs/
 
 ## Project Overview
 
-GeneticCompression is a Java/Maven research experiment that explores whether a genetic-programming system can evolve a compact algebraic recipe that regenerates bytes from an input file. The intended compression artifact is not a traditional entropy-coded stream; it is a program-like representation whose decoder evaluates expressions to reproduce byte segments.
+GeneticCompression is a research experiment that explores whether search can find a compact algebraic recipe that regenerates bytes from an input file. The intended compression artifact is not a traditional entropy-coded stream; it is a program-like representation whose decoder evaluates expressions to reproduce byte segments.
 
-The repository has two related packages:
+The repository has two implementations, and only one is active:
 
-- `com.precognizant.genpress`: compression experiments, file/number conversion, utilities, and ad hoc executable probes.
-- `com.precognizant.genetics`: a small genetic-programming engine with populations, chromosomes, genes, expression nodes, operands, randomness, and support utilities.
+- **`genetic_compression/` (Python, active).** The research harness: byte model, grammar, recipes and decoder, binary serialization, baselines, staged fitness, exhaustive and genetic search, hybrid residual experiments, and a reproducible experiment runner. Standard library only. Tests in `tests/`.
+- **`legacy-java/` (Java/Maven, historical).** The original 2015-2016 implementation, moved there unmodified. Two packages: `com.precognizant.genpress` (compression experiments, file/number conversion, ad hoc probes) and `com.precognizant.genetics` (a small genetic-programming engine). Nothing in the Python harness depends on it. Do not develop new behavior here; see `legacy-java/README.md`.
 
-The original `data/` sample files are intentionally excluded because they contained private image data. Do not require private sample files for normal tests.
+The original `data/` sample files are intentionally excluded because they contained private image data. Do not require private sample files for normal tests; every Python fixture is synthetic and generated.
 
 ## Current Technical State
 
@@ -99,44 +102,55 @@ Use it as a best-effort workflow aid:
 - Keep fitness deterministic for a fixed seed and input.
 - Bound expression growth. Power operations can create enormous values and pathological runtimes.
 - Avoid global mutable experiment state where practical. Current code has static and instance counters; new code should isolate state per run.
-- Preserve the package split unless there is a clear migration plan:
+- Keep the module split in the Python harness: byte semantics, grammar, recipe/decoder, serialization, baselines, fitness, and search are separate and only depend downward. The decoder must never depend on a search.
+- Preserve the legacy Java package split if that code is ever touched:
   - `genpress` owns compression domain concepts.
   - `genetics` owns generic GA/GP machinery.
-- Do not turn scratch `main` methods into the primary interface. Add a clear CLI or tests when behavior becomes stable.
+- Do not turn scratch `main` methods into the primary interface. `genetic_compression.experiments` is the CLI.
 
 ## Coding Standards
 
-- Language: Java.
-- Build system: Maven (`pom.xml`).
-- Test framework: JUnit 4.
+Active development is Python:
+
+- Language: Python 3.10+, standard library only.
+- Test framework: `unittest`.
+- Type hints on public functions; module docstrings that say *why*, not *what*.
+
+The retained Java under `legacy-java/` is Java 8-era with Maven (`legacy-java/pom.xml`) and JUnit 4. Do not add behavior there.
 - Keep formatting consistent with nearby code unless doing an intentional formatting-only pass.
 - Use meaningful names for experimental parameters: `populationSize`, `segmentSize`, `maxDepth`, `maxGenerations`, `mutationRate`, `seed`.
-- Do not add new external dependencies without a reason documented in `docs/TODO.md` or a plan.
+- Do not add new external dependencies without a reason documented in `docs/TODO.md` or a plan. The Python harness has none by design.
 - Avoid broad rewrites that obscure research behavior. First stabilize tests and data semantics, then refactor.
 - Add or update tests whenever changing conversion, fitness, selection, mutation, serialization, or decoder behavior.
 
 ## Verification
 
-Preferred local checks when Maven is available:
+Preferred local check, and the one that gates changes:
 
 ```bash
-mvn test
+python -m unittest discover -s tests -t .
 ```
 
 Useful targeted checks:
 
 ```bash
-mvn -Dtest=NumUtilsTest test
-mvn -Dtest=FileUtilsTest test
+python -m unittest tests.test_codec
+python -m genetic_compression.experiments --input-class shift --segment-size 16
+```
+
+Legacy Java, only when Maven is available:
+
+```bash
+mvn -f legacy-java/pom.xml test
 ```
 
 If Maven is not installed, state that explicitly and use source inspection or any available compiled artifacts only as supporting evidence. Do not claim a clean build without running it.
 
 ## Security, Privacy, and IP
 
-- Do not commit `data/`, private images, generated binary test artifacts, credentials, or machine-local IDE caches.
+- Do not commit `data/`, private images, generated binary test artifacts, credentials, machine-local IDE caches, or experiment output (`*.jsonl`, `results/`).
 - Keep public examples synthetic and small.
-- Preserve MIT license headers and third-party attribution, including the BigDecimal square-root attribution.
+- Preserve MIT license headers and third-party attribution, including the BigDecimal square-root attribution in `legacy-java/.../genetics/core/Gene.java`.
 - Do not make compression-performance claims without reproducible experiments and exact byte counts.
 
 ## Documentation Rules

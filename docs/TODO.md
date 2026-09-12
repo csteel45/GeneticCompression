@@ -2,24 +2,31 @@
 
 ## Java Migration Decision
 
-The Python harness now covers every phase of `plans/python-conversion-plan.md`,
-so the open question is what happens to `src/`. Options, unchanged from the plan:
+**Resolved.** The Java source moved unmodified to `legacy-java/`. It was not
+deleted and not reduced to a Git tag, because the Java byte semantics are the
+reference the Python model was designed against and that comparison should stay
+inspectable in the working tree. See
+`architecture/current-codebase.md` for the reasoning and
+`../legacy-java/README.md` for the directory's own notes.
 
-- keep it in place (current state)
-- move it to `legacy-java/`
-- keep it only as a Git tag
-- delete it after an archival release
+Remaining, low priority:
 
-Nothing should be deleted until this is decided deliberately. See
-`architecture/current-codebase.md` for what the Python harness replaces.
+- Decide whether `Compression.eap` / `Compression.ldb` (the Enterprise Architect
+  model of the Java design) should move into `legacy-java/` as well. They are
+  still at the repository root, and they are tracked despite `.gitignore` listing
+  `*.eap` and `*.ldb` — a pre-existing inconsistency, untouched by the move.
+- Consider whether `legacy-java/target/` should be deleted outright. It is stale
+  2023 build output, ignored by Git, kept only because the docs cite its Surefire
+  reports.
 
 ## Java Build and Test Confidence
 
-Only relevant while the Java source is retained.
+Only relevant while the Java source is retained. All commands now need
+`-f legacy-java/pom.xml` or a `cd legacy-java` first.
 
 - Install or configure Maven in the development environment used by agents.
   `mvn` is not installed in the current agent shell, so no Java verification has
-  been run there.
+  been run there, either before or after the move.
 - Fix or clarify `NumUtilsTest.testConvertToNumber`. The disagreement is now
   documented: the helper preserves negative `BigInteger` values while the first
   assertion expects an absolute value. The Python harness settled the underlying

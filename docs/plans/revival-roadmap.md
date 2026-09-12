@@ -1,5 +1,13 @@
 # Revival Roadmap
 
+> **Superseded.** This was the plan for reviving the Java implementation in
+> place. It was overtaken by `python-conversion-plan.md`, which rebuilt the
+> project in Python; the Java source now sits unmodified under `legacy-java/`.
+> Kept for the record, because the phase ordering below (byte semantics before
+> search, artifacts before evaluation) is what the Python conversion actually
+> followed. Commands here predate the move and would need
+> `-f legacy-java/pom.xml`.
+
 ## Phase 1: Make the Project Buildable
 
 - Install Maven or add a documented wrapper.
