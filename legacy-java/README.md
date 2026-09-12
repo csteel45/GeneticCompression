@@ -23,6 +23,10 @@ directory is unchanged and relative to it, so Maven and Eclipse treat
 - `.classpath`, `.project`, `.settings/` — Eclipse metadata.
 - `target/` — stale build output from a 2023 run, kept only for the Surefire
   reports referenced in the docs. Not in version control.
+- `Compression.eap`, `Compression.ldb` — Enterprise Architect UML model of the
+  Java design, and its leftover lock file. Tracked in Git despite `.gitignore`
+  listing `*.eap` and `*.ldb`; the patterns were added after the files were
+  already committed, and untracking them is a separate decision.
 
 ## Building
 

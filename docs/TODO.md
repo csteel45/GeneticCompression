@@ -9,12 +9,15 @@ inspectable in the working tree. See
 `architecture/current-codebase.md` for the reasoning and
 `../legacy-java/README.md` for the directory's own notes.
 
+`Compression.eap` and `Compression.ldb` (the Enterprise Architect model of the
+Java design) moved with it.
+
 Remaining, low priority:
 
-- Decide whether `Compression.eap` / `Compression.ldb` (the Enterprise Architect
-  model of the Java design) should move into `legacy-java/` as well. They are
-  still at the repository root, and they are tracked despite `.gitignore` listing
-  `*.eap` and `*.ldb` — a pre-existing inconsistency, untouched by the move.
+- Decide whether to untrack `Compression.eap` / `Compression.ldb`. They are
+  tracked despite `.gitignore` listing `*.eap` and `*.ldb`, because the patterns
+  were added after the files were committed. Untracking them would remove the
+  design model from the working tree of a fresh clone.
 - Consider whether `legacy-java/target/` should be deleted outright. It is stale
   2023 build output, ignored by Git, kept only because the docs cite its Surefire
   reports.
