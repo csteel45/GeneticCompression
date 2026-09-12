@@ -7,7 +7,7 @@ Start here after reading `AGENTS.md`.
 GeneticCompression explores whether evolved algebraic recipes can reproduce data
 segments more compactly than storing raw bytes. The active implementation is the
 Python harness in `genetic_compression/`; the original Java source is retained
-unmodified as historical reference.
+unmodified under `legacy-java/` as historical reference.
 
 The key risk has not changed: exact reconstruction is a hard constraint, while
 expression search easily produces large, expensive recipes that do not actually
@@ -38,12 +38,10 @@ such.
 
 ## Current Priorities
 
-1. Decide the fate of the Java source (retain in place, `legacy-java/`, tag, or
-   delete after an archival release).
-2. Widen the exhaustive enumeration reach without losing the exhaustion proof.
-3. Improve genetic search on structured-but-not-algebraic byte patterns, or
+1. Widen the exhaustive enumeration reach without losing the exhaustion proof.
+2. Improve genetic search on structured-but-not-algebraic byte patterns, or
    document that the grammar is the limitation rather than the search.
-4. Extend the hybrid experiments to larger segments where residual compression
+3. Extend the hybrid experiments to larger segments where residual compression
    has room to pay for itself.
 
 ## Documentation Map

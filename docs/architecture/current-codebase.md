@@ -1,8 +1,16 @@
 # Current Codebase
 
-## Packages
+## Layout
 
-`com.precognizant.genpress` contains compression-facing experiments:
+- `genetic_compression/` and `tests/` — the Python research harness, the active
+  development path.
+- `legacy-java/` — the original Java/Maven project, moved there unmodified in
+  2026 and retained as historical reference.
+
+## Java Packages
+
+Under `legacy-java/src/main/java/`, `com.precognizant.genpress` contains
+compression-facing experiments:
 
 - `Compress`: reads a hard-coded file from `data/`, segments bytes, converts bytes to `BigInteger`, and writes a reconstructed output in a scratch flow.
 - `FileUtils`: static file segmentation helpers and first-segment extraction.
@@ -17,7 +25,7 @@
 - `data`: small `TestData` container.
 - `util`: randomness, logging, and data-generation helpers.
 
-## Active Flow
+## Original Java Flow
 
 The compression idea is:
 
@@ -89,14 +97,24 @@ pinned by tests, so the difference stays documented rather than remembered.
 
 ## Migration Status
 
-The Python harness now covers the byte model, recipe model and decoder,
+Resolved. The Python harness covers the byte model, recipe model and decoder,
 serialization and size accounting, baselines, exhaustive search, genetic search,
-hybrid residual experiments, and a reproducible experiment runner, with tests
-for each.
+hybrid residual experiments, and a reproducible experiment runner, each with
+tests. It is the active research path and lives at the repository root.
 
-The Java source is retained in place and unmodified. No Java functionality has
-been removed, and nothing in the Python harness depends on it. The remaining
-decision -- whether Java stays at `src/`, moves to `legacy-java/`, survives only
-as a Git tag, or is deleted after an archival release -- is deliberately left
-open; see `docs/TODO.md`. Java verification has not been run in the current
-environment because Maven is not installed there.
+The Java source was **moved unmodified to `legacy-java/`** rather than deleted or
+reduced to a Git tag. The reasoning:
+
+- Nothing is lost and nothing is hidden. The history, the failing test, and the
+  scratch probes stay inspectable in the working tree, which matters because the
+  Java byte semantics are the thing the Python model was designed against.
+- A tag-only archive would make that comparison require a checkout to verify,
+  and the comparison is load-bearing for the project's main design decision.
+- Keeping it at the repository root would have kept implying two active builds.
+
+No Java functionality has been removed, nothing in the Python harness depends on
+it, and every path inside `legacy-java/` is unchanged and relative to that
+directory, so Maven and Eclipse treat it as the project root. Java verification
+has not been run in the current environment because Maven is not installed
+there; the move was a pure file relocation with no edits, verified by Git
+recording every path as a rename.

@@ -326,6 +326,15 @@ Suggested commit:
 git commit -m "docs: mark python harness as primary research path"
 ```
 
+### Outcome
+
+Completed 2026-09-12. The Java source was **moved unmodified to `legacy-java/`**
+— not deleted, and not reduced to a Git tag, because the Java byte semantics are
+the reference the Python model was designed against and that comparison should
+stay inspectable in the working tree. See
+`docs/architecture/current-codebase.md` for the full reasoning and
+`legacy-java/README.md` for the directory's own notes.
+
 ## Branch, Commit, And Merge Workflow
 
 Recommended workflow:
@@ -339,8 +348,8 @@ git checkout -b python-conversion
 Work in the phase commits above. Before merge:
 
 ```bash
-python -m unittest
-mvn test
+python -m unittest discover -s tests -t .
+mvn -f legacy-java/pom.xml test
 git status --short
 ```
 
